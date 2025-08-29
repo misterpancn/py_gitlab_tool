@@ -11,12 +11,17 @@ from fastapi.exceptions import RequestValidationError
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from typing import Annotated
+from dotenv import load_dotenv
 
 from src.api import auth as auth_router
 from src.api import gitlab as gitlab_router
 from src.auth.auth import get_current_active_user
 from src.models.user import User
 
+load_dotenv()
+
+HTTP_HOST = os.getenv("HTTP_HOST", "127.0.0.1")
+HTTP_PORT = int(os.getenv("HTTP_PORT", 8080))
 # 创建FastAPI应用
 app = FastAPI(title="GitLab提交查询工具")
 
@@ -89,4 +94,4 @@ async def check_auth(current_user: Annotated[User, Depends(get_current_active_us
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8008, reload=True)
+    uvicorn.run("main:app", host=HTTP_HOST, port=HTTP_PORT, reload=True)
