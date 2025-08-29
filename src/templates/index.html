@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - GitLab提交查询工具{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>GitLab提交信息查询</h2>
+    <div class="error-message" id="error-message"></div>
+    
+    <form id="query-form" class="query-form">
+        <div class="form-group">
+            <label for="project_id">GitLab项目ID</label>
+            <input type="text" id="project_id" name="project_id" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="branch">分支名称</label>
+            <input type="text" id="branch" name="branch" required>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="start_date">开始日期</label>
+                <input type="date" id="start_date" name="start_date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="end_date">结束日期</label>
+                <input type="date" id="end_date" name="end_date" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="author_emails">开发人员邮箱（多个邮箱用逗号分隔）</label>
+            <input type="text" id="author_emails" name="author_emails" placeholder="例如：dev1@example.com,dev2@example.com">
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="page_size">每页显示</label>
+                <select id="page_size" name="page_size">
+                    <option value="10">10条</option>
+                    <option value="20">20条</option>
+                    <option value="50">50条</option>
+                    <option value="100">100条</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">查询</button>
+            <button type="button" id="export-text-btn" class="btn-secondary">导出文本格式</button>
+        </div>
+    </form>
+    
+    <div class="results-container">
+        <h3>查询结果</h3>
+        <div id="loading" class="loading" style="display: none;">加载中...</div>
+        <div id="results-table-container" style="display: none;">
+            <table id="results-table" class="results-table">
+                <thead>
+                    <tr>
+                        <th>提交ID</th>
+                        <th>作者</th>
+                        <th>邮箱</th>
+                        <th>日期</th>
+                        <th>标题</th>
+                        <th>详情</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body">
+                    <!-- 结果将通过JavaScript动态添加 -->
+                </tbody>
+            </table>
+            
+            <!-- 分页控件 -->
+            <div class="pagination" id="pagination">
+                <div class="pagination-info">
+                    <span id="pagination-info">显示 0-0 条，共 0 条</span>
+                </div>
+                <div class="pagination-controls">
+                    <button id="prev-page" class="btn-page" disabled>&lt; 上一页</button>
+                    <span id="current-page">第 0 页，共 0 页</span>
+                    <button id="next-page" class="btn-page" disabled>下一页 &gt;</button>
+                </div>
+            </div>
+        </div>
+        <div id="no-results" class="no-results" style="display: none;">
+            没有找到符合条件的提交记录
+        </div>
+    </div>
+</div>
+
+<!-- 提交详情模态框 -->
+<div id="commit-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>提交详情</h3>
+        <div id="commit-details">
+            <!-- 提交详情将通过JavaScript动态添加 -->
+        </div>
+    </div>
+</div>
+
+<!-- 文本导出模态框 -->
+<div id="text-export-modal" class="modal">
+    <div class="modal-content">
+        <span class="close text-export-close">&times;</span>
+        <h3>文本格式导出</h3>
+        <div class="text-export-actions">
+            <button id="copy-text-btn" class="btn-secondary">复制到剪贴板</button>
+        </div>
+        <div id="text-export-content" class="text-export-content">
+            <!-- 文本导出内容将通过JavaScript动态添加 -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='js/index.js') }}"></script>
+{% endblock %}
