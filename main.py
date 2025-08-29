@@ -35,11 +35,16 @@ app.add_middleware(
 )
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "default_secret_key"))
 
-# 挂载静态文件
-app.mount("/static", StaticFiles(directory="src/static"), name="static")
+# 挂载静态文件 - 使用绝对路径，更适合生产环境
+import pathlib
+BASE_DIR = pathlib.Path(__file__).parent
+STATIC_DIR = BASE_DIR / "src" / "static"
 
-# 设置模板
-templates = Jinja2Templates(directory="src/templates")
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+# 设置模板 - 使用绝对路径，更适合生产环境
+TEMPLATES_DIR = BASE_DIR / "src" / "templates"
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 # 注册API路由
 app.include_router(auth_router.router, prefix="/api", tags=["认证"])
